@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+"""ftw-slo launcher: run from the kit folder without installing (`python3 ftw-slo --help`).
+
+Requires Python 3.9+ and PyYAML (`pip install pyyaml`). To install as a command
+instead, run `pipx install .` in this folder.
+"""
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+
+try:
+    import yaml  # noqa: F401
+except ImportError:
+    sys.stderr.write("ftw-slo needs PyYAML: python3 -m pip install --user pyyaml\n")
+    sys.exit(2)
+
+from ftw_slo.cli import main  # noqa: E402
+
+sys.exit(main())

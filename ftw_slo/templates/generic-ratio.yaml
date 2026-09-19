@@ -1,0 +1,33 @@
+name: generic-ratio
+tier: starter
+title: Generic ratio (two PromQL expressions)
+category: availability
+kind: ratio
+summary: Any event-based SLI from your own "bad events" and "all events" PromQL expressions.
+description: |
+  Bring your own queries: errors_query returns bad events per second and total_query all
+  events per second, both using ${window} as the range. ftw-slo fills in 5m, 30m, 1h, ...
+  for every burn-rate window. When errors_query returns nothing (no bad events recorded
+  yet) the error ratio is 0, not "no data".
+requires: Two PromQL expressions returning per-second event rates.
+params:
+  errors_query:
+    type: promql
+    required: true
+    example: 'sum(rate(payments_failed_total[${window}]))'
+    description: Bad events per second; must contain ${window}.
+  total_query:
+    type: promql
+    required: true
+    example: 'sum(rate(payments_total[${window}]))'
+    description: All events per second; must contain ${window}.
+queries:
+  errors: '${errors_query}'
+  total: '${total_query}'
+test:
+  params:
+    errors_query: 'sum(rate(payments_failed_total{env="prod"}[${window}]))'
+    total_query: 'sum(rate(payments_attempted_total{env="prod"}[${window}]))'
+  series:
+    - {series: 'payments_failed_total{env="prod", provider="a"}', type: counter, good: 0, bad: 1}
+    - {series: 'payments_attempted_total{env="prod", provider="a"}', type: counter, good: 1, bad: 1}

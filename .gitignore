@@ -1,0 +1,10 @@
+# Publishing notes (not part of the repo)
+PUBLISHING.md
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+.DS_Store

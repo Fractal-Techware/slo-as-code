@@ -1,0 +1,44 @@
+name: http-latency
+tier: starter
+title: HTTP latency (threshold)
+category: latency
+kind: ratio
+summary: Share of HTTP requests served faster than a threshold, from a classic histogram.
+description: |
+  Latency SLI "99% of requests complete in under 300 ms". Uses the classic histogram
+  bucket at the threshold: slow requests = _count - _bucket{le="<threshold>"}. The
+  threshold must be an existing bucket boundary of your histogram. Prometheus 3
+  normalizes `le` labels to float notation (1 -> "1.0"); ftw-slo renders the
+  threshold the same way.
+requires: A classic histogram of request durations with a bucket at the threshold (default http_request_duration_seconds).
+params:
+  selector:
+    type: matchers
+    required: true
+    example: 'job="checkout"'
+    description: Label matchers selecting the service's requests.
+  metric:
+    type: metric
+    default: http_request_duration_seconds
+    description: Histogram base name (without _bucket / _count).
+  threshold:
+    type: le
+    default: "0.3"
+    description: Latency threshold in the histogram's unit; must equal a bucket `le` boundary.
+  request_matcher:
+    type: matchers
+    default: ''
+    description: Optional extra matcher, e.g. code!~"5.." to judge only successful requests.
+queries:
+  errors: 'sum${by}(rate(${metric}_count{${selector+request_matcher}}[${window}])) - sum${by}(rate(${metric}_bucket{${selector+request_matcher}, le="${threshold}"}[${window}]))'
+  total: 'sum${by}(rate(${metric}_count{${selector+request_matcher}}[${window}]))'
+test:
+  params:
+    selector: 'job="checkout"'
+    threshold: "0.3"
+  series:
+    - {series: 'http_request_duration_seconds_bucket{job="checkout", le="0.1"}', type: counter, good: 0.5, bad: 0}
+    - {series: 'http_request_duration_seconds_bucket{job="checkout", le="0.3"}', type: counter, good: 1, bad: 0}
+    - {series: 'http_request_duration_seconds_bucket{job="checkout", le="1.0"}', type: counter, good: 1, bad: 1}
+    - {series: 'http_request_duration_seconds_bucket{job="checkout", le="+Inf"}', type: counter, good: 1, bad: 1}
+    - {series: 'http_request_duration_seconds_count{job="checkout"}', type: counter, good: 1, bad: 1}

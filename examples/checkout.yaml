@@ -1,0 +1,31 @@
+# Checkout API: availability and latency SLOs from the Prometheus client library's
+# default HTTP metrics. Generate: python3 ftw-slo generate examples/ --out generated/
+apiVersion: ftw-slo/v1
+service: checkout
+description: Checkout HTTP API behind the storefront
+labels:
+  team: payments
+slos:
+  - name: availability
+    description: Checkout requests that do not fail with a server error
+    objective: 99.9
+    window: 30d
+    sli:
+      template: http-availability
+      params:
+        selector: 'job="checkout", handler!="/healthz"'
+    alerting:
+      annotations:
+        runbook_url: https://runbooks.example.com/checkout/availability
+      page:
+        labels:
+          notify: pagerduty
+  - name: latency
+    description: Checkout requests served in under 300 ms
+    objective: 99
+    window: 30d
+    sli:
+      template: http-latency
+      params:
+        selector: 'job="checkout", handler!="/healthz"'
+        threshold: 0.3

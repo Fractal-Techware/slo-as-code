@@ -1,0 +1,25 @@
+# A 28-day availability SLO on a non-default metric and status label, with the
+# ticket alert kept but the page alert routed to a different receiver.
+apiVersion: ftw-slo/v1
+service: api-gateway
+description: Public API gateway
+labels:
+  team: platform
+slos:
+  - name: availability
+    description: Gateway requests that do not fail with a server error or a throttle
+    objective: 99.5
+    window: 28d
+    sli:
+      template: http-availability
+      params:
+        metric: gateway_requests_total
+        selector: 'env="prod"'
+        error_matcher: 'status=~"5..|429"'
+    alerting:
+      name: ApiGateway
+      annotations:
+        runbook_url: https://runbooks.example.com/api-gateway/availability
+      page:
+        labels:
+          notify: pagerduty

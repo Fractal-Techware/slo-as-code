@@ -1,0 +1,216 @@
+# promtool timing tests for SLI template http-availability (6 scenarios). Generated; do not edit.
+# Run: promtool test rules http-availability.test.yml
+rule_files:
+  - rules/http-availability.rules.yml
+evaluation_interval: 1m
+tests:
+  - name: 'http-availability 99.9%: fast burn (100% errors) pages within 3m'
+    interval: 1m
+    input_series:
+      - series: http_requests_total{job="checkout", instance="a", code="200"}
+        values: 0+1000x360 360000+0x59
+      - series: http_requests_total{job="checkout", instance="a", code="503"}
+        values: 0+0x360 1000+1000x59
+      - series: http_requests_total{job="other", instance="b", code="500"}
+        values: 0+1000x420
+    alert_rule_test:
+      - eval_time: 6h
+        alertname: Slo999FastBurn
+        exp_alerts: []
+      - eval_time: 6h
+        alertname: Slo999SlowBurn
+        exp_alerts: []
+      - eval_time: 363m
+        alertname: Slo999FastBurn
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              slo: objective-999
+              slo_alert: page
+              slo_service: http-availability
+            exp_annotations:
+              summary: 'http-availability objective-999: error budget fast burn (page)'
+              description: 'The http-availability objective-999 SLO (99.9% over 30d) is consuming its error budget too fast. Firing condition(s): 1h and 5m error ratio above 14.4x the budget (whole budget gone in 2.1 days at that rate).'
+    promql_expr_test:
+      - expr: ftw_slo:sli_error:ratio_rate5m{slo="objective-999", slo_service="http-availability"}
+        eval_time: 390m
+        exp_samples:
+          - labels: ftw_slo:sli_error:ratio_rate5m{slo="objective-999", slo_service="http-availability"}
+            value: 1
+  - name: 'http-availability 99.9%: slow burn (2x budget) opens a ticket, does not page'
+    interval: 1m
+    input_series:
+      - series: http_requests_total{job="checkout", instance="a", code="200"}
+        values: 0+998x360
+      - series: http_requests_total{job="checkout", instance="a", code="503"}
+        values: 0+2x360
+      - series: http_requests_total{job="other", instance="b", code="500"}
+        values: 0+1000x360
+    alert_rule_test:
+      - eval_time: 2h
+        alertname: Slo999SlowBurn
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              slo: objective-999
+              slo_alert: ticket
+              slo_service: http-availability
+            exp_annotations:
+              summary: 'http-availability objective-999: error budget slow burn (ticket)'
+              description: 'The http-availability objective-999 SLO (99.9% over 30d) is consuming its error budget too fast. Firing condition(s): 6h and 30m error ratio above 6x the budget (whole budget gone in 5 days at that rate); 1d and 2h error ratio above 3x the budget (whole budget gone in 10 days at that rate); 3d and 6h error ratio above 1x the budget (whole budget gone in 30 days at that rate).'
+      - eval_time: 2h
+        alertname: Slo999FastBurn
+        exp_alerts: []
+      - eval_time: 6h
+        alertname: Slo999SlowBurn
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              slo: objective-999
+              slo_alert: ticket
+              slo_service: http-availability
+            exp_annotations:
+              summary: 'http-availability objective-999: error budget slow burn (ticket)'
+              description: 'The http-availability objective-999 SLO (99.9% over 30d) is consuming its error budget too fast. Firing condition(s): 6h and 30m error ratio above 6x the budget (whole budget gone in 5 days at that rate); 1d and 2h error ratio above 3x the budget (whole budget gone in 10 days at that rate); 3d and 6h error ratio above 1x the budget (whole budget gone in 30 days at that rate).'
+      - eval_time: 6h
+        alertname: Slo999FastBurn
+        exp_alerts: []
+  - name: 'http-availability 99.9%: healthy (0.5x budget) for 1d stays quiet'
+    interval: 1m
+    input_series:
+      - series: http_requests_total{job="checkout", instance="a", code="200"}
+        values: 0+999.5x1440
+      - series: http_requests_total{job="checkout", instance="a", code="503"}
+        values: 0+0.5x1440
+      - series: http_requests_total{job="other", instance="b", code="500"}
+        values: 0+1000x1440
+    alert_rule_test:
+      - eval_time: 1h
+        alertname: Slo999FastBurn
+        exp_alerts: []
+      - eval_time: 1h
+        alertname: Slo999SlowBurn
+        exp_alerts: []
+      - eval_time: 6h
+        alertname: Slo999FastBurn
+        exp_alerts: []
+      - eval_time: 6h
+        alertname: Slo999SlowBurn
+        exp_alerts: []
+      - eval_time: 1d
+        alertname: Slo999FastBurn
+        exp_alerts: []
+      - eval_time: 1d
+        alertname: Slo999SlowBurn
+        exp_alerts: []
+    promql_expr_test:
+      - expr: round(ftw_slo:error_budget_remaining:ratio{slo="objective-999", slo_service="http-availability"}, 0.000001)
+        eval_time: 1d
+        exp_samples:
+          - labels: '{slo="objective-999", slo_service="http-availability"}'
+            value: 0.5
+  - name: 'http-availability 99.5%: fast burn (100% errors) pages within 7m'
+    interval: 1m
+    input_series:
+      - series: http_requests_total{job="checkout", instance="a", code="200"}
+        values: 0+1000x360 360000+0x59
+      - series: http_requests_total{job="checkout", instance="a", code="503"}
+        values: 0+0x360 1000+1000x59
+      - series: http_requests_total{job="other", instance="b", code="500"}
+        values: 0+1000x420
+    alert_rule_test:
+      - eval_time: 6h
+        alertname: Slo995FastBurn
+        exp_alerts: []
+      - eval_time: 6h
+        alertname: Slo995SlowBurn
+        exp_alerts: []
+      - eval_time: 367m
+        alertname: Slo995FastBurn
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              slo: objective-995
+              slo_alert: page
+              slo_service: http-availability
+            exp_annotations:
+              summary: 'http-availability objective-995: error budget fast burn (page)'
+              description: 'The http-availability objective-995 SLO (99.5% over 30d) is consuming its error budget too fast. Firing condition(s): 1h and 5m error ratio above 14.4x the budget (whole budget gone in 2.1 days at that rate).'
+    promql_expr_test:
+      - expr: ftw_slo:sli_error:ratio_rate5m{slo="objective-995", slo_service="http-availability"}
+        eval_time: 390m
+        exp_samples:
+          - labels: ftw_slo:sli_error:ratio_rate5m{slo="objective-995", slo_service="http-availability"}
+            value: 1
+  - name: 'http-availability 99.5%: slow burn (2x budget) opens a ticket, does not page'
+    interval: 1m
+    input_series:
+      - series: http_requests_total{job="checkout", instance="a", code="200"}
+        values: 0+990x360
+      - series: http_requests_total{job="checkout", instance="a", code="503"}
+        values: 0+10x360
+      - series: http_requests_total{job="other", instance="b", code="500"}
+        values: 0+1000x360
+    alert_rule_test:
+      - eval_time: 2h
+        alertname: Slo995SlowBurn
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              slo: objective-995
+              slo_alert: ticket
+              slo_service: http-availability
+            exp_annotations:
+              summary: 'http-availability objective-995: error budget slow burn (ticket)'
+              description: 'The http-availability objective-995 SLO (99.5% over 30d) is consuming its error budget too fast. Firing condition(s): 6h and 30m error ratio above 6x the budget (whole budget gone in 5 days at that rate); 1d and 2h error ratio above 3x the budget (whole budget gone in 10 days at that rate); 3d and 6h error ratio above 1x the budget (whole budget gone in 30 days at that rate).'
+      - eval_time: 2h
+        alertname: Slo995FastBurn
+        exp_alerts: []
+      - eval_time: 6h
+        alertname: Slo995SlowBurn
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              slo: objective-995
+              slo_alert: ticket
+              slo_service: http-availability
+            exp_annotations:
+              summary: 'http-availability objective-995: error budget slow burn (ticket)'
+              description: 'The http-availability objective-995 SLO (99.5% over 30d) is consuming its error budget too fast. Firing condition(s): 6h and 30m error ratio above 6x the budget (whole budget gone in 5 days at that rate); 1d and 2h error ratio above 3x the budget (whole budget gone in 10 days at that rate); 3d and 6h error ratio above 1x the budget (whole budget gone in 30 days at that rate).'
+      - eval_time: 6h
+        alertname: Slo995FastBurn
+        exp_alerts: []
+  - name: 'http-availability 99.5%: healthy (0.5x budget) for 1d stays quiet'
+    interval: 1m
+    input_series:
+      - series: http_requests_total{job="checkout", instance="a", code="200"}
+        values: 0+997.5x1440
+      - series: http_requests_total{job="checkout", instance="a", code="503"}
+        values: 0+2.5x1440
+      - series: http_requests_total{job="other", instance="b", code="500"}
+        values: 0+1000x1440
+    alert_rule_test:
+      - eval_time: 1h
+        alertname: Slo995FastBurn
+        exp_alerts: []
+      - eval_time: 1h
+        alertname: Slo995SlowBurn
+        exp_alerts: []
+      - eval_time: 6h
+        alertname: Slo995FastBurn
+        exp_alerts: []
+      - eval_time: 6h
+        alertname: Slo995SlowBurn
+        exp_alerts: []
+      - eval_time: 1d
+        alertname: Slo995FastBurn
+        exp_alerts: []
+      - eval_time: 1d
+        alertname: Slo995SlowBurn
+        exp_alerts: []
+    promql_expr_test:
+      - expr: round(ftw_slo:error_budget_remaining:ratio{slo="objective-995", slo_service="http-availability"}, 0.000001)
+        eval_time: 1d
+        exp_samples:
+          - labels: '{slo="objective-995", slo_service="http-availability"}'
+            value: 0.5

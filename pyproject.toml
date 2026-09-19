@@ -1,0 +1,32 @@
+# Optional: install ftw-slo as a command (pipx install . / pip install .).
+# The kit also runs without installing anything: python3 ftw-slo --help
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ftw-slo"
+version = "1.0.0"
+description = "FTW SLO-as-Code (free edition): Prometheus SLO recording rules and multi-window multi-burn-rate alerts from YAML"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["PyYAML>=5.4"]
+authors = [{ name = "Fractal Techware SRL", email = "hello@fractaltechware.com" }]
+keywords = ["slo", "sre", "prometheus", "error-budget", "burn-rate", "observability"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Topic :: System :: Monitoring",
+  "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://fractaltechware.com"
+
+[project.scripts]
+ftw-slo = "ftw_slo.cli:main"
+
+[tool.setuptools]
+packages = ["ftw_slo"]
+
+[tool.setuptools.package-data]
+ftw_slo = ["templates/*.yaml"]

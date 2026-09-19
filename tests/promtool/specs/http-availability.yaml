@@ -1,0 +1,23 @@
+# promtool timing test fixture for SLI template http-availability. Generated; do not edit.
+apiVersion: ftw-slo/v1
+service: http-availability
+description: promtool timing test fixture for template http-availability
+slos:
+  - name: objective-999
+    objective: 99.9
+    window: 30d
+    sli:
+      template: http-availability
+      params:
+        selector: job="checkout"
+    alerting:
+      name: Slo999
+  - name: objective-995
+    objective: 99.5
+    window: 30d
+    sli:
+      template: http-availability
+      params:
+        selector: job="checkout"
+    alerting:
+      name: Slo995

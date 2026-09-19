@@ -1,0 +1,18 @@
+# Generic ratio from your own counters, alerting with the SRE Workbook profile
+# (page on 1h/5m and 6h/30m, ticket on 3d/6h).
+apiVersion: ftw-slo/v1
+service: billing
+labels:
+  team: finance-platform
+slos:
+  - name: invoice-generation
+    description: Invoices generated without error
+    objective: 99.9
+    sli:
+      template: generic-ratio
+      params:
+        errors_query: 'sum(rate(billing_invoices_failed_total[${window}]))'
+        total_query: 'sum(rate(billing_invoices_attempted_total[${window}]))'
+    alerting:
+      name: BillingInvoices
+      profile: workbook

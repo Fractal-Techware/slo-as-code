@@ -1,0 +1,36 @@
+name: http-availability
+tier: starter
+title: HTTP availability
+category: availability
+kind: ratio
+summary: Share of HTTP requests that did not fail with a server error (5xx).
+description: |
+  Availability of an HTTP service from a request counter with a status code label,
+  such as the Prometheus client libraries' http_requests_total{code}. 4xx responses
+  are client errors and count as good by default; tighten error_matcher to include
+  429 if throttling should burn budget.
+requires: A counter of HTTP requests with a status code label (default http_requests_total{code}).
+params:
+  selector:
+    type: matchers
+    required: true
+    example: 'job="checkout"'
+    description: Label matchers selecting the service's requests.
+  metric:
+    type: metric
+    default: http_requests_total
+    description: Request counter name.
+  error_matcher:
+    type: matchers
+    default: 'code=~"5.."'
+    description: Matcher selecting failed requests. Use status=~"5.." or code=~"5..|429" to fit your labels.
+queries:
+  errors: 'sum${by}(rate(${metric}{${selector+error_matcher}}[${window}]))'
+  total: 'sum${by}(rate(${metric}{${selector}}[${window}]))'
+test:
+  params:
+    selector: 'job="checkout"'
+  series:
+    - {series: 'http_requests_total{job="checkout", instance="a", code="200"}', type: counter, good: 1, bad: 0}
+    - {series: 'http_requests_total{job="checkout", instance="a", code="503"}', type: counter, good: 0, bad: 1}
+    - {series: 'http_requests_total{job="other", instance="b", code="500"}', type: counter, good: 1, bad: 1}
