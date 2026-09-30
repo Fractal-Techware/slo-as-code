@@ -33,7 +33,7 @@ python3 ftw-slo generate slos/ --out generated/
 Python 3.9+ and PyYAML are the only requirements. Works with Prometheus 2.40+ and 3.x,
 kube-prometheus-stack, Grafana Mimir, Thanos and VictoriaMetrics.
 
-By [Fractal Techware](https://fractaltechware.gumroad.com/?utm_source=github&utm_medium=readme&utm_campaign=free-repo). MIT licensed.
+By [Fractal Techware](https://store.fractaltechware.com/?utm_source=github&utm_medium=readme&utm_campaign=free-repo). MIT licensed.
 
 ## What's included
 
@@ -158,7 +158,7 @@ template-reference.md   every SLI template and its parameters (generated)
 ## Want the full pack?
 
 This repository is a free, fully working subset of the
-**[SLO-as-Code Kit](https://fractaltechware.gumroad.com/l/slo-as-code-kit?utm_source=github&utm_medium=readme&utm_campaign=free-repo)**
+**[SLO-as-Code Kit](https://store.fractaltechware.com/l/slo-as-code-kit?utm_source=github&utm_medium=readme&utm_campaign=free-repo)**
 — same generator, same test standard. If these three templates cover your HTTP services but
 not your mesh, your queues or your dashboards, the paid tiers pick up where this leaves off:
 
@@ -174,7 +174,7 @@ not your mesh, your queues or your dashboards, the paid tiers pick up where this
 | Error budget report (Markdown/HTML from the Prometheus API), multi-tenant labels, Helm values, CI workflow, SLO workshop guide | – | – | – | yes |
 | License | MIT | own organization | own organization | client / agency use |
 
-[See the full kit on Gumroad →](https://fractaltechware.gumroad.com/l/slo-as-code-kit?utm_source=github&utm_medium=readme&utm_campaign=free-repo)
+[See the full kit on Gumroad →](https://store.fractaltechware.com/l/slo-as-code-kit?utm_source=github&utm_medium=readme&utm_campaign=free-repo)
 
 ## More free repos
 
