@@ -162,7 +162,7 @@ This repository is a free, fully working subset of the
 — same generator, same test standard. If these three templates cover your HTTP services but
 not your mesh, your queues or your dashboards, the paid tiers pick up where this leaves off:
 
-| | **Free** (this repo) | **Starter** $19 | **Pro** $49 | **Studio** $99 |
+| | **Free** (this repo) | **Starter** $19 | **Pro** $49 | **Agency** $299 |
 |---|:---:|:---:|:---:|:---:|
 | `ftw-slo` generator, recording rules, page/ticket burn-rate alerts | yes | yes | yes | yes |
 | SLI templates | 3 | 5 | 21 | 21 |
